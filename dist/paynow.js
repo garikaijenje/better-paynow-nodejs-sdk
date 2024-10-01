@@ -110,7 +110,8 @@ var Paynow = (function () {
     Paynow.prototype.isValidEmail = function (emailAddress) {
         if (!emailAddress || emailAddress.length === 0)
             return false;
-        return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(emailAddress);
+        var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(emailAddress);
     };
     Paynow.prototype.parse = function (response) {
         if (typeof response === "undefined") {
@@ -118,7 +119,8 @@ var Paynow = (function () {
         }
         if (response) {
             var parsedResponseURL = this.parseQuery(response);
-            if (parsedResponseURL.status.toString() !== "error" &&
+            if (parsedResponseURL.status.toString().toLocaleLowerCase() !==
+                "error" &&
                 !this.verifyHash(parsedResponseURL)) {
                 throw new Error("Hashes do not match!");
             }
@@ -145,7 +147,8 @@ var Paynow = (function () {
             return false;
         }
         else {
-            return values["hash"] === this.generateHash(values, this.integrationKey);
+            return (values["hash"] ===
+                this.generateHash(values, this.integrationKey));
         }
     };
     Paynow.prototype.urlEncode = function (url) {
@@ -175,7 +178,9 @@ var Paynow = (function () {
             amount: payment.total().toString(),
             id: this.integrationId,
             additionalinfo: payment.info(),
-            authemail: typeof payment.authEmail === "undefined" ? "" : payment.authEmail,
+            authemail: typeof payment.authEmail === "undefined"
+                ? ""
+                : payment.authEmail,
             status: "Message",
         };
         for (var _i = 0, _a = Object.keys(data); _i < _a.length; _i++) {

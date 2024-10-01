@@ -245,7 +245,8 @@ export class Paynow {
 			);
 
 			if (
-				parsedResponseURL.status.toString() !== "error" &&
+				parsedResponseURL.status.toString().toLocaleLowerCase() !==
+					"error" &&
 				!this.verifyHash(parsedResponseURL)
 			) {
 				throw new Error("Hashes do not match!");
