@@ -1,12 +1,9 @@
-[![Build Status](https://travis-ci.com/paynow/Paynow-NodeJS-SDK.svg?branch=master)](https://travis-ci.com/paynow/Paynow-NodeJS-SDK)
-
-
 # Node.JS SDK for Paynow Zimbabwe's API
 
 ## Sign in to Paynow and get integration details
 
-> Before you can start making requests to Paynow's API, you need to get an integration ID and integration Key from Paynow. 
-See Documentation [Generating Integration Key and Viewing integration ID](https://developers.paynow.co.zw/docs/integration_generation.html)
+> Before you can start making requests to Paynow's API, you need to get an integration ID and integration Key from Paynow.
+> See Documentation [Generating Integration Key and Viewing integration ID](https://developers.paynow.co.zw/docs/integration_generation.html)
 
 ## Documentation
 
@@ -26,6 +23,7 @@ Install the library using NPM or yarn
 ```sh
 $ npm install --save paynow
 ```
+
 ```sh
 $ yarn add paynow
 ```
@@ -49,7 +47,8 @@ paynow.returnUrl = "http://example.com/return?gateway=paynow";
 /* The return url can be set at later stages. 
 You might want to do this if you want to pass data to the return url (like the reference of the transaction) */
 ```
-The Integration ID and Key can be optionally loaded from `PAYNOW_INTEGRATION_ID` and `PAYNOW_INTEGRATION_KEY` environment variables (respectively). An instance of the Paynow class can then be created using the following: 
+
+The Integration ID and Key can be optionally loaded from `PAYNOW_INTEGRATION_ID` and `PAYNOW_INTEGRATION_KEY` environment variables (respectively). An instance of the Paynow class can then be created using the following:
 
 ```javascript
 let paynow = new Paynow();
@@ -81,12 +80,12 @@ The send method will return a `Promise<InitResponse>`, the InitResponse object b
 If request was successful, you should consider saving the poll url sent from Paynow in your database
 
 ```javascript
-paynow.send(payment).then(response => {
-  // Check if request was successful
-  if (response.success) {
-    // Get the link to redirect the user to, then use it as you see fit
-    let link = response.redirectUrl;
-  }
+paynow.send(payment).then((response) => {
+	// Check if request was successful
+	if (response.success) {
+		// Get the link to redirect the user to, then use it as you see fit
+		let link = response.redirectUrl;
+	}
 });
 ```
 
@@ -98,45 +97,49 @@ instead of the `send` method.
 The `sendMobile` method unlike the `send` method takes in two additional arguments i.e The phone number to send the payment request to and the mobile money method to use for the request. **Note that currently only Ecocash and OneMoney are supported**
 
 ```javascript
-paynow.sendMobile(payment, '0777000000', 'ecocash').then(response => {
-  // Handle response
+let payment = paynow.createPayment("Invoice 35", "authemail@example.com");
+// A second parameter is needed for mobile transactions
+// N.B. The authemail field supplied during test mode should match one of the login email addresses for the merchant account being tested.
+
+paynow.sendMobile(payment, "0777000000", "ecocash").then((response) => {
+	// Handle response
 });
 ```
 
 The response object is almost identical to the one you get if you send a normal request. With a few differences, firstly, you don't get a url to redirect to. Instead you instructions (which ideally should be shown to the user instructing them how to make payment on their mobile phone)
 
 ```javascript
-paynow.sendMobile(
-    
-    // The payment to send to Paynow
-    payment, 
+paynow
+	.sendMobile(
+		// The payment to send to Paynow
+		payment,
 
-    // The phone number making payment
-    '0777000000',
-    
-    // The mobile money method to use.
-    'ecocash' 
+		// The phone number making payment
+		"0777000000",
 
-).then(function(response) {
-    if(response.success) {
-        // These are the instructions to show the user. 
-        // Instruction for how the user can make payment
-        let instructions = response.instructions // Get Payment instructions for the selected mobile money method
+		// The mobile money method to use.
+		"ecocash"
+	)
+	.then(function (response) {
+		if (response.success) {
+			// These are the instructions to show the user.
+			// Instruction for how the user can make payment
+			let instructions = response.instructions; // Get Payment instructions for the selected mobile money method
 
-        // Get poll url for the transaction. This is the url used to check the status of the transaction. 
-        // You might want to save this, we recommend you do it
-        let pollUrl = response.pollUrl; 
+			// Get poll url for the transaction. This is the url used to check the status of the transaction.
+			// You might want to save this, we recommend you do it
+			let pollUrl = response.pollUrl;
 
-        console.log(instructions)
-
-    } else {
-        console.log(response.error)
-    }
-}).catch(ex => {
-    // Ahhhhhhhhhhhhhhh
-    // *freak out*
-    console.log('Your application has broken an axle', ex)
-});
+			console.log(instructions);
+		} else {
+			console.log(response.error);
+		}
+	})
+	.catch((ex) => {
+		// Ahhhhhhhhhhhhhhh
+		// *freak out*
+		console.log("Your application has broken an axle", ex);
+	});
 ```
 
 # Checking transaction status
@@ -149,9 +152,9 @@ The SDK exposes a handy method that you can use to check the status of a transac
 let status = paynow.pollTransaction(pollUrl);
 
 if (status.paid()) {
-  // Yay! Transaction was paid for
+	// Yay! Transaction was paid for
 } else {
-  console.log("Why you no pay?");
+	console.log("Why you no pay?");
 }
 ```
 
@@ -176,21 +179,18 @@ payment.add("Bananas", 2.5);
 payment.add("Apples", 3.4);
 
 // Send off the payment to Paynow
-paynow.send(payment).then( (response) => {
+paynow.send(payment).then((response) => {
+	// Check if request was successful
+	if (response.success) {
+		// Get the link to redirect the user to, then use it as you see fit
+		let link = response.redirectUrl;
 
-    // Check if request was successful
-    if(response.success) {
-        // Get the link to redirect the user to, then use it as you see fit
-        let link = response.redirectUrl;
-
-        // Save poll url, maybe (recommended)?
-        let pollUrl = response.pollUrl;
-    }
-
+		// Save poll url, maybe (recommended)?
+		let pollUrl = response.pollUrl;
+	}
 });
 ```
 
-
-## Development 
+## Development
 
 Fork this repository and clone to local machine
